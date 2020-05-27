@@ -27,26 +27,43 @@ jobs:
 
     - name: Extract and compile
       run: |
-        tar xvzf openssl.tar.gz
-        cd openssl-1.1.1g
-        ./config
-        make
+        # tar xvzf openssl.tar.gz
+        # cd openssl-1.1.1g
+        # ./config
+        # make
+        echo "Hello World" > out.txt
 
     - name: Test
       run: |
-        cd openssl-1.1.1g
-        make test
+        # cd openssl-1.1.1g
+        # make test
+        cat out.txt
 
     - name: Package
       run: |
-        cd openssl-1.1.1g
-        mv libcrypto.so* ../ 
-        mv libssl.so* ../
+        # cd openssl-1.1.1g
+        # mv libcrypto.so* ../ 
+        # mv libssl.so* ../
+        echo "Packaged"
 
 
     - name: Updload library
       uses: actions/upload-artifact@v2
       with:
         name: libssl
-        path: lib*.so*
+        #path: lib*.so*
+        path: out.txt
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: v1.1.1g
+        body: |
+          Test Release
+        draft: true
+        prerelease: true
 
