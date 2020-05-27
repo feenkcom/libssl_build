@@ -32,7 +32,7 @@ jobs:
         cd build
         tar xvzf ../openssl.tar.gz
         cd openssl-1.1.1g
-        ./config --prefix=../../openssl-1.1.1g --openssldir=../../openssl-1.1.1g
+        ./config --prefix=${GITHUB_WORKSPACE}/openssl-1.1.1g --openssldir=${GITHUB_WORKSPACE}/openssl-1.1.1g
         make
 
     - name: Test
