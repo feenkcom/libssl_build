@@ -25,14 +25,19 @@ jobs:
     - name: Retrieve openssl
       run: wget -O openssl.tar.gz https://www.openssl.org/source/openssl-1.1.1g.tar.gz
 
-    - name: Extract, compile and test
+    - name: Extract and compile
       run: |
         tar xvzf openssl.tar.gz
         cd openssl-1.1.1g
         ./config
         make
-        make test
-        tar cvzf libssl.tar.gz libcrypto.so* libssl.so*
+
+    - name: Test
+      run: make test
+
+    - name: Package
+      run: tar cvzf ../libssl.tar.gz libcrypto.so* libssl.so*
+
 
     - name: Updload library
       uses: actions/upload-artifact@v2
