@@ -28,31 +28,31 @@ jobs:
 
     - name: Extract and compile
       run: |
+        mkdir build
+        cd build
         tar xvzf openssl.tar.gz
         cd openssl-1.1.1g
-        ./config
+        ./config --prefix=../../openssl-1.1.1g --openssldir=../../openssl-1.1.1g
         make
 
     - name: Test
       run: |
-        cd openssl-1.1.1g
+        cd build/openssl-1.1.1g
         make test
 
-    - name: Package
+    - name: Install
       run: |
-        cd openssl-1.1.1g
-        mv libcrypto.so* ../ 
-        mv libssl.so* ../
-
+        cd build/openssl-1.1.1g
+        make install
 
     - name: Updload library
       uses: actions/upload-artifact@v2
       with:
         name: libssl
-        path: lib*.so*
+        path: openssl-1.1.1g
 
     - name: Archive for release
-      run: zip libssl.zip out.txt
+      run: zip -r libssl.zip openssl-1.1.1g
 
     - name: Create Release
       id: create_release
