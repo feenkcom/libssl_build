@@ -12,7 +12,11 @@ on:
 
 jobs:
   build:
-    runs-on: [ ubuntu-18.04, macos-latest ]
+    name: Build Unixes
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, macos-latest]
 
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
