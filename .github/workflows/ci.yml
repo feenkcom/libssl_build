@@ -33,10 +33,14 @@ jobs:
         make
 
     - name: Test
-      run: make test
+      run: |
+        cd openssl-1.1.1g
+        make test
 
     - name: Package
-      run: tar cvzf ../libssl.tar.gz libcrypto.so* libssl.so*
+      run: |
+        cd openssl-1.1.1g
+        tar cvzf ../libssl.tar.gz libcrypto.so* libssl.so*
 
 
     - name: Updload library
