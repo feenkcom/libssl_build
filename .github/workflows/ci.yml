@@ -40,12 +40,13 @@ jobs:
     - name: Package
       run: |
         cd openssl-1.1.1g
-        tar cvzf ../libssl.tar.gz libcrypto.so* libssl.so*
+        mv libcrypto.so* ../ 
+        mv libssl.so* ../
 
 
     - name: Updload library
       uses: actions/upload-artifact@v2
       with:
         name: libssl
-        path: libssl.tar.gz
+        path: lib*.so*
 
