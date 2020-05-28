@@ -48,10 +48,15 @@ jobs:
     - name: Archive for release
       run: |
         mkdir artifacts
-        zip -r artifacts/libssl-dev-${{ matrix.os }}.zip openssl-1.1.1g
-        zip -rj artifacts/libssl-${{ matrix.os }}.zip openssl-1.1.1g/lib
+        cp -ar openssl-1.1.1g/lib/*.so* artifacts
 
-    - name: Updload library
+    - name: Updload dev library
+      uses: actions/upload-artifact@v2
+      with:
+        name: libssl-dev-${{ matrix.os }}
+        path: openssl-1.1.1g
+
+    - name: Updload runtime library
       uses: actions/upload-artifact@v2
       with:
         name: libssl-${{ matrix.os }}
