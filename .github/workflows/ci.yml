@@ -48,7 +48,7 @@ jobs:
     - name: Archive for release
       run: |
         zip -r libssl-dev-${{ matrix.os }}.zip openssl-1.1.1g
-        zip -rj libssl-${{ matrix.os }}.zip openssl-1.1.1g/*.so*
+        zip -rj libssl-${{ matrix.os }}.zip openssl-1.1.1g/lib
 
     - name: Updload library
       uses: actions/upload-artifact@v2
