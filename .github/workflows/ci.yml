@@ -65,7 +65,7 @@ jobs:
         tag_name: ${{ github.ref }}
         release_name: v1.1.1g
         body: |
-          OpenSSL 1.1.1g Release Candidate
+          OpenSSL 1.1.1g Release Candidate for ${{ matrix.os }}
         draft: true
         prerelease: true
 
