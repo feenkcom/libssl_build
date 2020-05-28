@@ -6,7 +6,7 @@ on:
   push:
     branches:
         - master
-        - akg
+        - akg2
   pull_request:
     branches: [ master ]
 
@@ -47,47 +47,13 @@ jobs:
 
     - name: Archive for release
       run: |
-        zip -r libssl-dev-${{ matrix.os }}.zip openssl-1.1.1g
-        zip -rj libssl-${{ matrix.os }}.zip openssl-1.1.1g/lib
+        mkdir artifacts
+        zip -r artifacts/libssl-dev-${{ matrix.os }}.zip openssl-1.1.1g
+        zip -rj artifacts/libssl-${{ matrix.os }}.zip openssl-1.1.1g/lib
 
     - name: Updload library
       uses: actions/upload-artifact@v2
       with:
         name: libssl-${{ matrix.os }}
-        path: openssl-1.1.1g
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: v1.1.1g
-        body: |
-          OpenSSL 1.1.1g Release Candidate for ${{ matrix.os }}
-        draft: true
-        prerelease: true
-
-    - name: Upload -dev Release Asset
-      id: upload-dev-release-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./libssl-dev-${{ matrix.os }}.zip
-        asset_name: libssl-dev-${{ matrix.os }}.zip
-        asset_content_type: application/zip
-
-    - name: Upload Release Asset
-      id: upload-release-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./libssl-${{ matrix.os }}.zip
-        asset_name: libssl-${{ matrix.os }}.zip
-        asset_content_type: application/zip
+        path: artifacts
 
