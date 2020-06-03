@@ -59,6 +59,7 @@ jobs:
         otool -L libcrypto.*dylib*
         for i in libssl.*dylib*; do install_name_tool -id @executable_path/Plugins/$i $i; done
         for i in libssl.*dylib*; do install_name_tool -change ${GITHUB_WORKSPACE}/openssl-1.1.1g/lib/libcrypto.dylib @executable_path/Plugins/libcrypto.dylib $i; done
+        for i in libssl.*dylib*; do install_name_tool -change ${GITHUB_WORKSPACE}/openssl-1.1.1g/lib/libcrypto.1.1.dylib @executable_path/Plugins/libcrypto.1.1.dylib $i; done
         otool -L libssl.*dylib*
 
     - name: Archive for release
@@ -90,7 +91,7 @@ jobs:
         release_name: v1.1.1g-${{ matrix.variant.platform }}
         body: |
           OpenSSL 1.1.1g Release Candidate for ${{ matrix.variant.platform }}
-        draft: true
+        draft: false
         prerelease: true
 
     - name: Upload -dev Release Asset
