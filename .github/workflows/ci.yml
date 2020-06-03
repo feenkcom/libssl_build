@@ -13,10 +13,14 @@ on:
 jobs:
   build:
     name: Build Unixes
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.variant.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, macos-latest]
+        variant:
+          - os: ubuntu-18.04
+            platform: linux
+          - os: macos-latest
+            platform: mac
 
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -40,6 +44,15 @@ jobs:
         cd build/openssl-1.1.1g
         make test
 
+    - name: Mac id correction
+      if: matrix.variant.platform == 'mac'
+      run: |
+        cd build/openssl-1.1.1g
+        for i in libssl.*dylib*; do install_name_tool -id @executable_path/Plugins/$i $i; done
+        otool -L libssl.*dylib*
+        for i in libcrypto.*dylib*; do install_name_tool -id @executable_path/Plugins/$i $i; done
+        otool -L libcrypto.*dylib*
+
     - name: Install
       run: |
         cd build/openssl-1.1.1g
@@ -49,19 +62,19 @@ jobs:
       run: |
         mkdir artifacts
         cp openssl-1.1.1g/lib/libssl.* openssl-1.1.1g/lib/libcrypto.* artifacts/
-        zip -j libssl-${{ matrix.os }}.zip artifacts/*
-        zip -r libssl-dev-${{ matrix.os}}.zip openssl-1.1.1g
+        zip -jy libssl-${{ matrix.variant.platform }}.zip artifacts/*
+        zip -ry libssl-dev-${{ matrix.variant.platform }}.zip openssl-1.1.1g
 
     - name: Updload dev library
       uses: actions/upload-artifact@v2
       with:
-        name: libssl-dev-${{ matrix.os }}
+        name: libssl-dev-${{ matrix.variant.platform }}
         path: openssl-1.1.1g
 
     - name: Updload runtime library
       uses: actions/upload-artifact@v2
       with:
-        name: libssl-${{ matrix.os }}
+        name: libssl-${{ matrix.variant.platform }}
         path: artifacts
 
     - name: Create Release
@@ -70,10 +83,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v1.1.1g-${{ matrix.os }}
-        release_name: v1.1.1g-${{ matrix.os }}
+        tag_name: v1.1.1g-${{ matrix.variant.platform }}
+        release_name: v1.1.1g-${{ matrix.variant.platform }}
         body: |
-          OpenSSL 1.1.1g Release Candidate for ${{ matrix.os }}
+          OpenSSL 1.1.1g Release Candidate for ${{ matrix.variant.platform }}
         draft: true
         prerelease: true
 
@@ -84,8 +97,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./libssl-dev-${{ matrix.os }}.zip
-        asset_name: libssl-dev-${{ matrix.os }}.zip
+        asset_path: ./libssl-dev-${{ matrix.variant.platform }}.zip
+        asset_name: libssl-dev-${{ matrix.variant.platform }}.zip
         asset_content_type: application/zip
 
     - name: Upload Release Asset
@@ -95,7 +108,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./libssl-${{ matrix.os }}.zip
-        asset_name: libssl-${{ matrix.os }}.zip
+        asset_path: ./libssl-${{ matrix.variant.platform }}.zip
+        asset_name: libssl-${{ matrix.variant.platform }}.zip
         asset_content_type: application/zip
 
