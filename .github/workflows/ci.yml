@@ -44,19 +44,22 @@ jobs:
         cd build/openssl-1.1.1g
         make test
 
-    - name: Mac id correction
-      if: matrix.variant.platform == 'mac'
-      run: |
-        cd build/openssl-1.1.1g
-        for i in libssl.*dylib*; do install_name_tool -id @executable_path/Plugins/$i $i; done
-        otool -L libssl.*dylib*
-        for i in libcrypto.*dylib*; do install_name_tool -id @executable_path/Plugins/$i $i; done
-        otool -L libcrypto.*dylib*
-
     - name: Install
       run: |
         cd build/openssl-1.1.1g
         make install
+
+    - name: Mac id correction
+      if: matrix.variant.platform == 'mac'
+      run: |
+        cd openssl-1.1.1g/lib
+        otool -L libcrypto.*dylib*
+        otool -L libssl.*dylib*
+        for i in libcrypto.*dylib*; do install_name_tool -id @executable_path/Plugins/$i $i; done
+        otool -L libcrypto.*dylib*
+        for i in libssl.*dylib*; do install_name_tool -id @executable_path/Plugins/$i $i; done
+        for i in libssl.*dylib*; do install_name_tool -change ${GITHUB_WORKSPACE}/openssl-1.1.1g/lib/libcrypto.dylib @executable_path/Plugins/libcrypto.dylib $i; done
+        otool -L libssl.*dylib*
 
     - name: Archive for release
       run: |
